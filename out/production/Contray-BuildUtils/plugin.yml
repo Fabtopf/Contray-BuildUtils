@@ -1,0 +1,10 @@
+name: Contray-BuildUtils
+version: 1.0
+author: Fabtopf
+main: de.Fabtopf.BuildUtils.Utilities.Main
+
+commands:
+  buildutils:
+    permission: contray.buildutils.admin
+    description: Command to manage the BuildUtils-Settings
+    usage: /<command>
