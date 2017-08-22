@@ -107,12 +107,12 @@ public class Connector {
 
         ResultSet rs = null;
 
-        if(isConnected()) {
+        if (isConnected()) {
 
             try {
                 rs = con.createStatement().executeQuery(qry);
-            } catch(SQLException e) {
-                if(Settings.devmode) {
+            } catch (SQLException e) {
+                if (Settings.devmode) {
                     e.printStackTrace();
                 }
 

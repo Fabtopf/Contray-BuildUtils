@@ -3,6 +3,7 @@ package de.Fabtopf.BuildUtils.Listener;
 import de.Fabtopf.BuildUtils.API.*;
 import de.Fabtopf.BuildUtils.API.Enum.MessagerType;
 import de.Fabtopf.BuildUtils.API.Manager.ModuleManager;
+import de.Fabtopf.BuildUtils.API.Manager.PermissionManager;
 import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
 import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
 import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
@@ -27,16 +28,21 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onTeleport(PlayerTeleportEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(e.getTo().getWorld().getName());
 
-            if(welt != null && welt.isManaged()) {
-                if((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    return;
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToEnter, p);
-                    e.setCancelled(true);
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(e.getTo().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        return;
+                    } else {
+                        Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToEnter, p);
+                        e.setCancelled(true);
+                    }
                 }
             }
         }
@@ -65,21 +71,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onBlockBreak(BlockBreakEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }
@@ -89,21 +100,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onBlockPlace(BlockPlaceEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }
@@ -113,21 +129,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onBucketPlace(PlayerBucketEmptyEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }
@@ -137,21 +158,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onBucketFill(PlayerBucketFillEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }
@@ -161,21 +187,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onInteract(PlayerInteractEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }
@@ -185,21 +216,26 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onInteractAtEntity(PlayerInteractAtEntityEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
-            OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
-            Spieler s = SpielerManager.getSpieler(p);
-            Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
 
-            if (welt != null && welt.isManaged()) {
-                if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
-                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
-                        return;
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
+                return;
+            } else {
+                OfflinePlayer op = Bukkit.getOfflinePlayer(p.getUniqueId());
+                Spieler s = SpielerManager.getSpieler(p);
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if (welt != null && welt.isManaged()) {
+                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.getBuilders().contains(op)) {
+                            return;
+                        } else {
+                            Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
+                            e.setCancelled(true);
+                        }
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
                         e.setCancelled(true);
                     }
-                } else {
-                    Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToChangeWorld, p);
-                    e.setCancelled(true);
                 }
             }
         }

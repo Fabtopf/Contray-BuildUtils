@@ -22,10 +22,13 @@ public class Message {
     public static String mysql_couldnotdisconnect = plugin_coloredprefix + "&4Fehler: &cDie MySQL-Verbindung konnte nicht beendet werden!";
     public static String mysql_updatefail = plugin_coloredprefix + "&4Fehler: &cEs ist ein Fehler bei der Datenübertragung zur MySQL-Datenbank aufgetreten!";
     public static String mysql_resultfail = plugin_coloredprefix + "&4Fehler: &cEs ist ein Fehler beim Abrufen eines Datensatzes aus der MySQL-Datenbank aufgetreten!";
+    public static String mysql_playerDoesntExist = Settings.prefix + "&4Fehler: &cDer angegebene Spieler ist nicht in der Datenbank registriert!";
 
     public static String worldmanagement_notPermittetToEnter = Settings.prefix + "&cDu darfst diese Welt nicht betreten!";
     public static String worldmanagement_notPermittetToStayIn = Settings.prefix + "&cDu darfst dich nicht in dieser Welt aufhalten!";
     public static String worldmanagement_notPermittetToChangeWorld = Settings.prefix + "&cDu darfst diese Welt nicht verändern!";
+    public static String worldmanagement_successfullyTeleportet(String welt) { return Settings.prefix + "&eDu befindest dich nun in der Welt &9" + welt + "&e!"; }
+    public static String worldmanagement_teleportFailed = Settings.prefix + "§cEs tut uns Leid, aber diese Welt existiert nicht!";
 
     public static String command_playerOnly = Settings.prefix + "&4Fehler: &cDieser Befehl kann nicht in der Konsole ausgeführt werden!";
 

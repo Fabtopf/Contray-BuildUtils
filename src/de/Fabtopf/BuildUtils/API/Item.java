@@ -47,4 +47,39 @@ public class Item {
     public boolean isInventory() {
         return inventory;
     }
+
+    public void setInteract(boolean interact) {
+        if(interact != this.interact) {
+            this.interact = interact;
+            Utils.updateItemInteract(id, interact);
+        }
+    }
+
+    public void setPlace(boolean place) {
+        if(place != this.place) {
+            this.place = place;
+            Utils.updateItemPlace(id, place);
+        }
+    }
+
+    public void setEmptyBucket(boolean emptyBucket) {
+        if(emptyBucket != this.emptyBucket) {
+            this.emptyBucket = emptyBucket;
+            Utils.updateItemEmpty(id, emptyBucket);
+        }
+    }
+
+    public void setFillBucket(boolean fillBucket) {
+        if(fillBucket != this.fillBucket) {
+            this.fillBucket = fillBucket;
+            Utils.updateItemFill(id, fillBucket);
+        }
+    }
+
+    public void setInventory(boolean inventory) {
+        if(inventory != this.inventory) {
+            this.inventory = inventory;
+            Utils.updateItemInventory(id, inventory);
+        }
+    }
 }

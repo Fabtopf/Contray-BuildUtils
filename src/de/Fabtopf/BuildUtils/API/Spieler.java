@@ -25,7 +25,10 @@ public class Spieler {
     }
 
     public void setBuilderGrade(int builderGrade) {
-        this.builderGrade = builderGrade;
+        if(builderGrade != this.builderGrade) {
+            this.builderGrade = builderGrade;
+            Utils.updateBuilderGrade(id, builderGrade);
+        }
     }
 
     public Player getP() {

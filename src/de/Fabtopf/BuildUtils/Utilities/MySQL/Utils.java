@@ -11,6 +11,8 @@ import org.bukkit.OfflinePlayer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Fabi on 15.08.2017.
@@ -189,7 +191,7 @@ public class Utils {
 
     public static void registerWorld(String name) {
         if(!worldExists(name)) {
-            Settings.mysql.update("INSERT INTO ContrayBU_Worlds (Name, UID, Lobby, Managed, NeededGrade, Public, Builders, Customers) VALUES ('" + name + "','" + Bukkit.getWorld(name).getUID().toString() + "','0','0','1','1','','')");
+            Settings.mysql.update("INSERT INTO ContrayBU_Worlds (Name, UID, Lobby, Managed, NeededGrade, Public, Builders, Customers) VALUES ('" + name + "','" + Bukkit.getWorld(name).getUID().toString() + "','0','0','0','1','','')");
         }
     }
 
@@ -567,4 +569,21 @@ public class Utils {
     public static void updateItemInteract(int id, boolean interact) { Settings.mysql.update("UPDATE ContrayBU_Items SET Interact='" + (interact ? 1 : 0) + "' WHERE ID='" + id + "'"); }
     public static void updateItemInventory(int id, boolean inventory) { Settings.mysql.update("UPDATE ContrayBU_Items SET Inventory='" + (inventory ? 1 : 0) + "' WHERE ID='" + id + "'"); }
 
+    public static List<Integer> getItemIds() {
+        List<Integer> list = new ArrayList<Integer>();
+
+        Connector mysql = Settings.mysql;
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Items");
+
+        try {
+            while(rs.next()) {
+                list.add(rs.getInt("ID"));
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return list;
+    }
 }

@@ -1,6 +1,7 @@
 package de.Fabtopf.BuildUtils.Utilities;
 
 import de.Fabtopf.BuildUtils.API.*;
+import de.Fabtopf.BuildUtils.API.Manager.ItemManager;
 import de.Fabtopf.BuildUtils.API.Manager.ModuleManager;
 import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
 import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
@@ -174,6 +175,15 @@ public class Register {
         for(World w : Bukkit.getWorlds()) {
             WeltenManager.registerWelt(w.getName());
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for(int id : Utils.getItemIds()) {
+                    ItemManager.registerItem(id);
+                }
+            }
+        }.runTaskLaterAsynchronously(Main.getInstance(), 10);
 
     }
 
