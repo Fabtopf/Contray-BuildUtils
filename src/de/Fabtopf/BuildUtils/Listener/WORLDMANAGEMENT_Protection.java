@@ -2,19 +2,20 @@ package de.Fabtopf.BuildUtils.Listener;
 
 import de.Fabtopf.BuildUtils.API.*;
 import de.Fabtopf.BuildUtils.API.Enum.MessagerType;
-import de.Fabtopf.BuildUtils.API.Manager.ModuleManager;
-import de.Fabtopf.BuildUtils.API.Manager.PermissionManager;
-import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
-import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
+import de.Fabtopf.BuildUtils.API.Enum.PlotState;
+import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import de.Fabtopf.BuildUtils.Utilities.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 
 /**
@@ -238,6 +239,70 @@ public class WORLDMANAGEMENT_Protection implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    /*
+     *  Wenn PlotRating aktiv ist
+     */
+
+    @EventHandler
+    public void onInteractWithRateItem(PlayerInteractEvent e) {
+        Spieler s = SpielerManager.getSpieler(e.getPlayer());
+        if(s.isRate()) {
+            e.setCancelled(true);
+
+            FinishedPlot plot = PlotManager.getPlot(Bukkit.getOfflinePlayer(ChatColor.stripColor(e.getPlayer().getInventory().getItem(22).getItemMeta().getDisplayName())));
+
+            if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
+                if (e.getItem().getItemMeta().getDisplayName().equals("§cSchlecht")) {
+                    plot.updatePlotState(PlotState.bad);
+                    s.getP().getInventory().clear();
+                    s.setRate(false);
+
+                    if(plot.getPlayer().isOnline()) {
+                        plot.setNoticed(true);
+                        Bukkit.getPlayer(plot.getPlayer().getUniqueId()).sendTitle("§9§lInfo zu deinem Plot", "§cDein Plot wurde abgelehnt!");
+                    }
+                }
+
+                if (e.getItem().getItemMeta().getDisplayName().equals("§6Weiterbauen")) {
+                    plot.updatePlotState(PlotState.good);
+                    s.getP().getInventory().clear();
+                    s.setRate(false);
+
+                    if(plot.getPlayer().isOnline()) {
+                        plot.setNoticed(true);
+                        Bukkit.getPlayer(plot.getPlayer().getUniqueId()).sendTitle("§9§lInfo zu deinem Plot", "§6Dein Plot kann noch verbessert werden!");
+                    }
+                }
+
+                if (e.getItem().getItemMeta().getDisplayName().equals("§aAngenommen")) {
+                    plot.updatePlotState(PlotState.accepted);
+                    s.getP().getInventory().clear();
+                    s.setRate(false);
+
+                    if(plot.getPlayer().isOnline()) {
+                        plot.setNoticed(true);
+                        Bukkit.getPlayer(plot.getPlayer().getUniqueId()).sendTitle("§9§lInfo zu deinem Plot", "§aDein Plot wurde angenommen!");
+                    }
+                }
+
+                if (e.getItem().getItemMeta().getDisplayName().equals("§cAbbrechen")) {
+                    s.getP().getInventory().clear();
+                    s.setRate(false);
+                }
+
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onInventoryInteractWhileRating(InventoryClickEvent e) {
+        Spieler s = SpielerManager.getSpieler((Player) e.getWhoClicked());
+        if(s.isRate()) {
+            e.setCancelled(true);
         }
     }
 

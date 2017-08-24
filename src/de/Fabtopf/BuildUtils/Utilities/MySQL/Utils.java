@@ -2,17 +2,21 @@ package de.Fabtopf.BuildUtils.Utilities.MySQL;
 
 import de.Fabtopf.BuildUtils.API.Connector;
 import de.Fabtopf.BuildUtils.API.Enum.MessagerType;
+import de.Fabtopf.BuildUtils.API.Enum.PlotState;
 import de.Fabtopf.BuildUtils.API.Message;
 import de.Fabtopf.BuildUtils.API.Messager;
 import de.Fabtopf.BuildUtils.API.UUID_Fetcher;
 import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Fabi on 15.08.2017.
@@ -28,6 +32,7 @@ public class Utils {
         if(!mysql.tableExists("ContrayBU_Worlds")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Worlds (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(100), UID VARCHAR(64) UNIQUE, Managed BOOLEAN, Lobby BOOLEAN, NeededGrade MEDIUMINT, Public BOOLEAN, Builders TEXT, Customers TEXT)");
         if(!mysql.tableExists("ContrayBU_Modules")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Modules (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(64) UNIQUE, Enabled BOOLEAN, Devmode BOOLEAN)");
         if(!mysql.tableExists("ContrayBU_Items")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Items (ID MEDIUMINT NOT NULL UNIQUE, Place BOOLEAN, Fill BOOLEAN, Empty BOOLEAN, Interact BOOLEAN, Inventory BOOLEAN)");
+        if(!mysql.tableExists("ContrayBU_Plots")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Plots (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlayerID MEDIUMINT UNIQUE, State INT(1), Noticed BOOLEAN, World VARCHAR(64), X DOUBLE, Y DOUBLE, Z DOUBLE, Pitch DOUBLE, Yaw DOUBLE)");
 
     }
 
@@ -586,4 +591,187 @@ public class Utils {
 
         return list;
     }
+
+    // Plot-Management
+
+    public static void registerPlot(OfflinePlayer op, Location loc) {
+        double x = loc.getX();
+        double y = loc.getY();
+        double z = loc.getZ();
+        String world = loc.getWorld().getName();
+        float pitch = loc.getPitch();
+        float yaw = loc.getYaw();
+
+        int player = getPlayerID(op);
+        int state = 0;
+        int noticed = 0;
+
+        Settings.mysql.update("INSERT INTO ContrayBU_Plots (PlayerID, State, Noticed, World, X, Y, Z, Pitch, Yaw) VALUES ('" + player + "','" + state + "','" + noticed + "','" + world + "','" + x + "','" + y + "','" + z + "','" + pitch + "','" + yaw + "')");
+
+    }
+
+    public static boolean plotExists(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    return true;
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return false;
+
+    }
+
+    public static boolean getPlotNoticed(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    return rs.getBoolean("Noticed");
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return false;
+
+    }
+
+    public static int getPlotID(int playerID) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("PlayerID") == playerID) {
+                    return rs.getInt("ID");
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return -1;
+
+    }
+
+    public static PlotState getPlotState(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    int state = rs.getInt("State");
+                    if(state == 0) return PlotState.notRated;
+                    if(state == 1) return PlotState.bad;
+                    if(state == 2) return PlotState.good;
+                    if(state == 3) return PlotState.accepted;
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return null;
+
+    }
+
+    public static Location getPlotSide(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    double x = rs.getDouble("X");
+                    double y = rs.getDouble("Y");
+                    double z = rs.getDouble("Z");
+                    World world = Bukkit.getWorld(rs.getString("World"));
+                    float pitch = (float) rs.getDouble("Pitch");
+                    float yaw = (float) rs.getDouble("Yaw");
+
+                    Location loc = new Location(world, x, y, z, pitch, yaw);
+                    return loc;
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return null;
+
+    }
+
+    public static OfflinePlayer getPlotPlayer(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Plots");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    return Bukkit.getOfflinePlayer(UUID.fromString(getPlayerUUID(rs.getInt("PlayerID"))));
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return null;
+
+    }
+
+    public static void updatePlotNoticed(int id, boolean noticed) { Settings.mysql.update("UPDATE ContrayBU_Plots SET Noticed='" + (noticed ? 1 : 0) + "' WHERE ID='" + id + "'"); }
+    public static void updatePlotState(int id, PlotState state) {
+        int i = -1;
+        if(state == PlotState.notRated) i = 0;
+        if(state == PlotState.bad) i = 1;
+        if(state == PlotState.good) i = 2;
+        if(state == PlotState.accepted) i = 3;
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET State='" + i + "' WHERE ID='" + id + "'");
+    }
+    public static void updatePlotSide(int id, Location loc) {
+        double x = loc.getX();
+        double y = loc.getY();
+        double z = loc.getZ();
+        String world = loc.getWorld().getName();
+        double pitch = (double) loc.getPitch();
+        double yaw = (double) loc.getYaw();
+
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET X='" + x + "' WHERE ID='" + id + "'");
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET Y='" + y + "' WHERE ID='" + id + "'");
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET Z='" + z + "' WHERE ID='" + id + "'");
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET World='" + world + "' WHERE ID='" + id + "'");
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET Pitch='" + pitch + "' WHERE ID='" + id + "'");
+        Settings.mysql.update("UPDATE ContrayBU_Plots SET Yaw='" + yaw + "' WHERE ID='" + id + "'");
+    }
+
+
 }

@@ -34,4 +34,10 @@ public class Message {
 
     public static String itemprotection_notAllowed = Settings.prefix + "&4Fehler: &cDu darfst dieses Item nicht verwenden!";
 
+    public static String plotmanager_notOnPlot = Settings.prefix + "&4Fehler: &cDu befindest dich nicht auf einem Plot!";
+    public static String plotmanager_notOwnPlot = Settings.prefix + "&4Fehler: &cDu kannst nur eigene Plot abgeben!";
+    public static String plotmanager_successfullyDone = Settings.prefix + "&aDu hast deinen Plot erfolgreich abgegeben!";
+    public static String plotmanager_alreadyDone = Settings.prefix + "&4Fehler: &cDu hast deinen Plot bereits abgegeben!";
+    public static String plotmanager_alreadyRating = Settings.prefix + "&4Fehler: &cDu bewertest bereits einen Plot!";
+
 }

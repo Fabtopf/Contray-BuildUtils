@@ -1,7 +1,9 @@
 package de.Fabtopf.BuildUtils.Listener;
 
+import com.intellectualcrafters.plot.api.PlotAPI;
 import de.Fabtopf.BuildUtils.API.*;
 import de.Fabtopf.BuildUtils.API.Enum.MessagerType;
+import de.Fabtopf.BuildUtils.API.Enum.PlotState;
 import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Commands.Inventory.INV_BuildUtils;
 import de.Fabtopf.BuildUtils.Utilities.Main;
@@ -18,6 +20,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.Location;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.List;
 
@@ -102,7 +106,21 @@ public class SERVER_InventoryInteract implements Listener {
 
                     if (itemname.equals("§9§lFertige Plots")) {
                         if (PermissionManager.check(p, new CustomPerm("contray.buildutils.plotrate", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
-                            INV_BuildUtils.openPlotManagement(p);
+                            INV_BuildUtils.openPlotManagement(p, 1);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§9§lPlot abgeben")) {
+                        if(PermissionManager.check(p, new CustomPerm("contray.buildutils.plotfinish", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openPlotFinishing(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§e§lInventar-Einstellungen")) {
+                        if(PermissionManager.check(p, new CustomPerm("contray.buildutils.changeinventory", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openInventorySettings(p);
                             return;
                         }
                     }
@@ -821,6 +839,252 @@ public class SERVER_InventoryInteract implements Listener {
                         }
                     }
 
+                }
+
+                /*
+                 *  ContrayBuild - PlotAbgabe
+                 */
+
+                if(invname.equals("§cContrayBuild - PlotAbgabe")) {
+                    e.setCancelled(true);
+
+                    if(itemname.equals("§cAbbrechen")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.openinv", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openGUI(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§aBestätigen")) {
+                        if(PermissionManager.check(p, new CustomPerm("contray.buildutils.plotfinish", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            if(PlotManager.getPlot(Bukkit.getOfflinePlayer(p.getUniqueId())) == null) {
+                                PlotAPI plot = new PlotAPI();
+                                if (plot.isInPlot(p)) {
+                                    if (plot.getPlot(p).getOwners().contains(p.getUniqueId())) {
+                                        Location side = new Location(Bukkit.getWorld(plot.getPlot(p).getSide().getWorld()), plot.getPlot(p).getSide().getX(), plot.getPlot(p).getSide().getY(), plot.getPlot(p).getSide().getZ(), plot.getPlot(p).getSide().getYaw(), plot.getPlot(p).getSide().getPitch());
+                                        PlotManager.registerPlot(Bukkit.getOfflinePlayer(p.getUniqueId()), side);
+                                        p.closeInventory();
+                                        Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_successfullyDone, p);
+                                        return;
+                                    } else {
+                                        p.closeInventory();
+                                        Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_notOwnPlot, p);
+                                        return;
+                                    }
+                                } else {
+                                    p.closeInventory();
+                                    Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_notOnPlot, p);
+                                    return;
+                                }
+                            } else {
+                                PlotAPI plotm = new PlotAPI();
+                                FinishedPlot plot = PlotManager.getPlot(Bukkit.getOfflinePlayer(p.getUniqueId()));
+                                if (plotm.isInPlot(p)) {
+                                    if (plotm.getPlot(p).getOwners().contains(p.getUniqueId())) {
+                                        if (!plot.getPlotState().getRated()) {
+                                            p.closeInventory();
+                                            Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_alreadyDone, p);
+                                            return;
+                                        } else {
+
+                                            plot.setNoticed(false);
+                                            plot.setSide(new Location(Bukkit.getWorld(plotm.getPlot(p).getSide().getWorld()), plotm.getPlot(p).getSide().getX(), plotm.getPlot(p).getSide().getY(), plotm.getPlot(p).getSide().getZ(), plotm.getPlot(p).getSide().getYaw(), plotm.getPlot(p).getSide().getPitch()));
+                                            plot.updatePlotState(PlotState.notRated);
+
+                                            p.closeInventory();
+                                            Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_successfullyDone, p);
+                                            return;
+                                        }
+                                    } else {
+                                        p.closeInventory();
+                                        Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_notOwnPlot, p);
+                                        return;
+                                    }
+                                } else {
+                                    p.closeInventory();
+                                    Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_notOnPlot, p);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                /*
+                 *  ContrayBuild - Plots
+                 */
+
+                if(invname.equals("§cContrayBuild - Plots")) {
+                    e.setCancelled(true);
+
+                    if(itemname.equals("§cZurück")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.openinv", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openGUI(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§aReload")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.plotrate", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openPlotManagement(p, 1);
+                            return;
+                        }
+                    }
+
+                    if(itemname.startsWith("§e") && Bukkit.getOfflinePlayer(ChatColor.stripColor(itemname)) != null && PlotManager.getPlot(Bukkit.getOfflinePlayer(ChatColor.stripColor(itemname))) != null) {
+                        FinishedPlot plot = PlotManager.getPlot(Bukkit.getOfflinePlayer(ChatColor.stripColor(itemname)));
+
+                        if(plot.getSide().getWorld() == null) plot.setSide(Utils.getPlotSide(plot.getID()));
+
+                        if(Bukkit.getWorld(plot.getSide().getWorld().getName()) != null) WeltenManager.registerWelt(plot.getSide().getWorld().getName());
+
+                        Spieler s = SpielerManager.getSpieler(p);
+                        if(!s.isRate()) {
+                            if (ModuleManager.getModule("WorldManagement").isEnabled()) {
+                                Welt welt = null;
+                                if(plot.getSide().getWorld() != null && WeltenManager.getWelt(plot.getSide().getWorld().getName()) != null) welt = WeltenManager.getWelt(plot.getSide().getWorld().getName());
+
+                                if (welt != null && welt.isManaged()) {
+                                    if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(Bukkit.getOfflinePlayer(p.getUniqueId())) || welt.getCustomers().contains(Bukkit.getOfflinePlayer(p.getUniqueId()))) {
+                                        p.closeInventory();
+                                        p.teleport(plot.getSide());
+                                        p.getInventory().clear();
+
+                                        ItemStack bad = new ItemStack(Material.WOOL, 1, (byte) 14);
+                                        ItemMeta badMeta = bad.getItemMeta();
+                                        badMeta.setDisplayName("§cSchlecht");
+                                        bad.setItemMeta(badMeta);
+
+                                        ItemStack good = new ItemStack(Material.WOOL, 1, (byte) 1);
+                                        ItemMeta goodMeta = good.getItemMeta();
+                                        goodMeta.setDisplayName("§6Weiterbauen");
+                                        good.setItemMeta(goodMeta);
+
+                                        ItemStack accepted = new ItemStack(Material.WOOL, 1, (byte) 5);
+                                        ItemMeta acceptedMeta = accepted.getItemMeta();
+                                        acceptedMeta.setDisplayName("§aAngenommen");
+                                        accepted.setItemMeta(acceptedMeta);
+
+                                        ItemStack cancel = new ItemStack(Material.BARRIER);
+                                        ItemMeta cancelMeta = cancel.getItemMeta();
+                                        cancelMeta.setDisplayName("§cAbbrechen");
+                                        cancel.setItemMeta(cancelMeta);
+
+                                        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                                        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+                                        skullMeta.setDisplayName("§e" + plot.getPlayer().getName());
+                                        skullMeta.setOwner(plot.getPlayer().getName());
+                                        skull.setItemMeta(skullMeta);
+
+                                        p.getInventory().setItem(3, bad);
+                                        p.getInventory().setItem(4, good);
+                                        p.getInventory().setItem(5, accepted);
+                                        p.getInventory().setItem(8, cancel);
+                                        p.getInventory().setItem(22, skull);
+
+                                        s.setRate(true);
+
+                                        return;
+                                    } else {
+                                        Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToEnter, p);
+                                        return;
+                                    }
+                                } else {
+                                    if(welt != null) {
+                                        p.closeInventory();
+                                        p.teleport(plot.getSide());
+                                        p.getInventory().clear();
+
+                                        ItemStack bad = new ItemStack(Material.WOOL, 1, (byte) 14);
+                                        ItemMeta badMeta = bad.getItemMeta();
+                                        badMeta.setDisplayName("§cSchlecht");
+                                        bad.setItemMeta(badMeta);
+
+                                        ItemStack good = new ItemStack(Material.WOOL, 1, (byte) 1);
+                                        ItemMeta goodMeta = good.getItemMeta();
+                                        goodMeta.setDisplayName("§6Weiterbauen");
+                                        good.setItemMeta(goodMeta);
+
+                                        ItemStack accepted = new ItemStack(Material.WOOL, 1, (byte) 5);
+                                        ItemMeta acceptedMeta = accepted.getItemMeta();
+                                        acceptedMeta.setDisplayName("§aAngenommen");
+                                        accepted.setItemMeta(acceptedMeta);
+
+                                        ItemStack cancel = new ItemStack(Material.BARRIER);
+                                        ItemMeta cancelMeta = cancel.getItemMeta();
+                                        cancelMeta.setDisplayName("§cAbbrechen");
+                                        cancel.setItemMeta(cancelMeta);
+
+                                        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                                        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+                                        skullMeta.setDisplayName("§e" + plot.getPlayer().getName());
+                                        skullMeta.setOwner(plot.getPlayer().getName());
+                                        skull.setItemMeta(skullMeta);
+
+                                        p.getInventory().setItem(3, bad);
+                                        p.getInventory().setItem(4, good);
+                                        p.getInventory().setItem(5, accepted);
+                                        p.getInventory().setItem(8, cancel);
+                                        p.getInventory().setItem(22, skull);
+
+                                        s.setRate(true);
+
+                                        return;
+                                    } else {
+                                        p.closeInventory();
+                                        Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_teleportFailed, p);
+                                        return;
+                                    }
+                                }
+
+                            } else {
+                                p.closeInventory();
+                                p.teleport(plot.getSide());
+                                p.getInventory().clear();
+
+                                ItemStack bad = new ItemStack(Material.WOOL, 1, (byte) 14);
+                                ItemMeta badMeta = bad.getItemMeta();
+                                badMeta.setDisplayName("§cSchlecht");
+                                bad.setItemMeta(badMeta);
+
+                                ItemStack good = new ItemStack(Material.WOOL, 1, (byte) 1);
+                                ItemMeta goodMeta = good.getItemMeta();
+                                goodMeta.setDisplayName("§6Weiterbauen");
+                                good.setItemMeta(goodMeta);
+
+                                ItemStack accepted = new ItemStack(Material.WOOL, 1, (byte) 5);
+                                ItemMeta acceptedMeta = accepted.getItemMeta();
+                                acceptedMeta.setDisplayName("§aAngenommen");
+                                accepted.setItemMeta(acceptedMeta);
+
+                                ItemStack cancel = new ItemStack(Material.BARRIER);
+                                ItemMeta cancelMeta = cancel.getItemMeta();
+                                cancelMeta.setDisplayName("§cAbbrechen");
+                                cancel.setItemMeta(cancelMeta);
+
+                                ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                                SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+                                skullMeta.setDisplayName("§e" + plot.getPlayer().getName());
+                                skullMeta.setOwner(plot.getPlayer().getName());
+                                skull.setItemMeta(skullMeta);
+
+                                p.getInventory().setItem(3, bad);
+                                p.getInventory().setItem(4, good);
+                                p.getInventory().setItem(5, accepted);
+                                p.getInventory().setItem(8, cancel);
+                                p.getInventory().setItem(22, skull);
+
+                                s.setRate(true);
+
+                                return;
+                            }
+                        } else {
+                            p.closeInventory();
+                            Messager.toPlayer(MessagerType.COLORED, Message.plotmanager_alreadyRating, p);
+                            return;
+                        }
+                    }
                 }
 
             }

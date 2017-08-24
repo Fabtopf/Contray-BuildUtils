@@ -1,10 +1,7 @@
 package de.Fabtopf.BuildUtils.Utilities;
 
 import de.Fabtopf.BuildUtils.API.*;
-import de.Fabtopf.BuildUtils.API.Manager.ItemManager;
-import de.Fabtopf.BuildUtils.API.Manager.ModuleManager;
-import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
-import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
+import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Commands.SERVER_BuildUtils;
 import de.Fabtopf.BuildUtils.Listener.ITEMPROTECTION_Protection;
 import de.Fabtopf.BuildUtils.Listener.SERVER_InventoryInteract;
@@ -185,6 +182,12 @@ public class Register {
             }
         }.runTaskLaterAsynchronously(Main.getInstance(), 10);
 
+
+        int plotint = 1;
+        while(Utils.plotExists(plotint)) {
+            PlotManager.registerPlot(plotint);
+            plotint++;
+        }
     }
 
 }

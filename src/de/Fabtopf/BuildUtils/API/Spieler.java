@@ -17,11 +17,14 @@ public class Spieler {
     private int id;
     private int builderGrade;
 
+    private boolean rate;
+
     public Spieler(Player p) {
         this.p = p;
         this.op = Bukkit.getOfflinePlayer(p.getUniqueId());
         this.id = Utils.getPlayerID(op);
         this.builderGrade = Utils.getBuilderGrade(id);
+        this.rate = false;
     }
 
     public void setBuilderGrade(int builderGrade) {
@@ -47,4 +50,7 @@ public class Spieler {
         return builderGrade;
     }
 
+    public boolean isRate() { return rate; }
+
+    public void setRate(boolean rate) { this.rate = rate; }
 }

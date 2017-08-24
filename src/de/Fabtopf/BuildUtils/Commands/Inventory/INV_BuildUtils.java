@@ -1,10 +1,7 @@
 package de.Fabtopf.BuildUtils.Commands.Inventory;
 
 import de.Fabtopf.BuildUtils.API.*;
-import de.Fabtopf.BuildUtils.API.Manager.ItemManager;
-import de.Fabtopf.BuildUtils.API.Manager.ModuleManager;
-import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
-import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
+import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Listener.SERVER_InventoryInteract;
 import de.Fabtopf.BuildUtils.Utilities.MySQL.Utils;
 import org.bukkit.Bukkit;
@@ -40,63 +37,126 @@ public class INV_BuildUtils {
         ItemMeta meta;
 
         for(int i = 0; i < invsize; i++) {
-            switch(i) {
 
-                case 11:
-                    item = new ItemStack(Material.EMPTY_MAP);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§e§lWorld-Management");
-                    item.setItemMeta(meta);
-                    break;
-                case 15:
-                    item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§a§lSpieler-Management");
-                    item.setItemMeta(meta);
-                    break;
-                case 19:
-                    item = new ItemStack(Material.REDSTONE_TORCH_ON, 1, (byte) 3);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§c§lPlugin-Settings");
-                    item.setItemMeta(meta);
-                    break;
-                case 22:
-                    item = new ItemStack(Material.NETHER_STAR);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§6§lModule-Settings");
-                    item.setItemMeta(meta);
-                    break;
-                case 25:
-                    item = new ItemStack(Material.ENDER_PEARL);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§5§lWelten besuchen");
-                    item.setItemMeta(meta);
-                    break;
-                case 29:
-                    item = new ItemStack(Material.PAPER);
-                    meta = item.getItemMeta();
-                    meta.setDisplayName("§c§lItem-Management");
-                    item.setItemMeta(meta);
-                    break;
-                case 33:
-                    if(Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
-                        item = new ItemStack(Material.GRASS);
+            if(PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.*", Converter.stringToArray("contray.buildutils.admin.spieler", "contray.buildutils.admin.worlds", "contray.buildutils.admin.settings", "contray.buildutils.admin.module", "contray.buildutils.admin.items", "contray.buildutils.*", "contray.*"), true, true))) {
+                switch (i) {
+
+                    case 11:
+                        item = new ItemStack(Material.EMPTY_MAP);
                         meta = item.getItemMeta();
-                        meta.setDisplayName("§9§lFertige Plots");
+                        meta.setDisplayName("§e§lWorld-Management");
                         item.setItemMeta(meta);
-                    } else {
-                        item = new ItemStack(Material.BARRIER);
+                        break;
+                    case 14:
+                        item = new ItemStack(Material.WORKBENCH);
                         meta = item.getItemMeta();
-                        meta.setDisplayName("§4§lNicht verfügbar!");
-                        meta.setLore(Converter.stringToList("§cBitte aktiviere das Plugin", "§cPlotSquared um diese", "§cFunktion freizuschalten!"));
+                        meta.setDisplayName("§e§lInventar-Einstellungen");
+                        meta.setLore(Converter.stringToList("§4Achtung!", "§cEinstellungen werden", "§cnicht gespeichert!"));
                         item.setItemMeta(meta);
-                    }
-                    break;
+                        break;
+                    case 15:
+                        item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§a§lSpieler-Management");
+                        item.setItemMeta(meta);
+                        break;
+                    case 19:
+                        item = new ItemStack(Material.REDSTONE_TORCH_ON, 1, (byte) 3);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§c§lPlugin-Settings");
+                        item.setItemMeta(meta);
+                        break;
+                    case 22:
+                        item = new ItemStack(Material.NETHER_STAR);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§6§lModule-Settings");
+                        item.setItemMeta(meta);
+                        break;
+                    case 25:
+                        item = new ItemStack(Material.ENDER_PEARL);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§5§lWelten besuchen");
+                        item.setItemMeta(meta);
+                        break;
+                    case 29:
+                        item = new ItemStack(Material.PAPER);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§c§lItem-Management");
+                        item.setItemMeta(meta);
+                        break;
+                    case 33:
+                        if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
+                            item = new ItemStack(Material.GRASS);
+                            meta = item.getItemMeta();
+                            meta.setDisplayName("§9§lFertige Plots");
+                            item.setItemMeta(meta);
+                        } else {
+                            item = new ItemStack(Material.BARRIER);
+                            meta = item.getItemMeta();
+                            meta.setDisplayName("§4§lNicht verfügbar!");
+                            meta.setLore(Converter.stringToList("§cBitte aktiviere das Plugin", "§cPlotSquared um diese", "§cFunktion freizuschalten!"));
+                            item.setItemMeta(meta);
+                        }
+                        break;
 
-                default:
-                    item = filler;
-                    break;
+                    default:
+                        item = filler;
+                        break;
 
+                }
+            } else {
+                switch (i) {
+
+                    case 13:
+                        if(PermissionManager.check(p, new CustomPerm("contray.buildutils.plotrate", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
+                                item = new ItemStack(Material.GRASS);
+                                meta = item.getItemMeta();
+                                meta.setDisplayName("§9§lFertige Plots");
+                                item.setItemMeta(meta);
+                            } else {
+                                item = new ItemStack(Material.BARRIER);
+                                meta = item.getItemMeta();
+                                meta.setDisplayName("§4§lNicht verfügbar!");
+                                meta.setLore(Converter.stringToList("§cBitte aktiviere das Plugin", "§cPlotSquared um diese", "§cFunktion freizuschalten!"));
+                                item.setItemMeta(meta);
+                            }
+                        } else {
+                            item = filler;
+                        }
+                        break;
+                    case 20:
+                        item = new ItemStack(Material.ENDER_PEARL);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§5§lWelten besuchen");
+                        item.setItemMeta(meta);
+                        break;
+                    case 24:
+                        if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
+                            item = new ItemStack(Material.GRASS);
+                            meta = item.getItemMeta();
+                            meta.setDisplayName("§9§lPlot abgeben");
+                            item.setItemMeta(meta);
+                        } else {
+                            item = new ItemStack(Material.BARRIER);
+                            meta = item.getItemMeta();
+                            meta.setDisplayName("§4§lNicht verfügbar!");
+                            item.setItemMeta(meta);
+                        }
+                        break;
+                    case 31:
+                        item = new ItemStack(Material.WORKBENCH);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§e§lInventar-Einstellungen");
+                        meta.setLore(Converter.stringToList("§4Achtung!", "§cEinstellungen werden", "§cnicht gespeichert!"));
+                        item.setItemMeta(meta);
+                        break;
+
+                    default:
+                        item = filler;
+                        break;
+
+                }
             }
 
             inv.setItem(i, item);
@@ -376,7 +436,71 @@ public class INV_BuildUtils {
 
     }
 
-    public static void openPlotManagement(Player p) {
+    public static void openPlotManagement(Player p, int page) {
+
+        List<FinishedPlot> plots = new ArrayList<FinishedPlot>();
+
+        for(FinishedPlot plot : PlotManager.getPlots()) {
+            if(plot.getPlotState().getRated() == false) {
+                plots.add(plot);
+            }
+        }
+
+        int invsize = 0;
+        if(plots.size() - ((page - 1) * 36) >= 36) invsize = 54;
+        if(plots.size() == 0) invsize = 9;
+        if(plots.size() - ((page - 1) * 36) < 36 && plots.size() > 0) invsize = ((int) (plots.size() - (((page - 1) * 36)) + 8) / 9) * 9 + 18;
+
+        Inventory inv = Bukkit.createInventory(null, invsize, "§cContrayBuild - Plots");
+
+        ItemStack filler = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName("§0");
+        filler.setItemMeta(fillerMeta);
+
+        ItemStack item = null;
+        ItemMeta meta;
+
+        for(int i = 0; i < invsize; i++) {
+            if(i + ((page - 1) * 36) < plots.size() && i < 36) {
+                item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                SkullMeta skull = (SkullMeta) item.getItemMeta();
+                skull.setDisplayName("§e" + plots.get(i).getPlayer().getName());
+                skull.setOwner(plots.get(i).getPlayer().getName());
+                item.setItemMeta(skull);
+            } else if(i == invsize - 1 || i == invsize - 9 || (page - 1 > 0 && i == invsize - 6) || (plots.size() - (36 * page) > 0 && i == invsize - 4)) {
+                if(i == invsize - 9) {
+                    item = new ItemStack(Material.EMERALD);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§aReload");
+                    item.setItemMeta(meta);
+                } else if(i == invsize - 1) {
+                    item = new ItemStack(Material.BARRIER);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§cZurück");
+                    item.setItemMeta(meta);
+                } else if(i == invsize - 6) {
+                    item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                    SkullMeta skull = (SkullMeta) item.getItemMeta();
+                    skull.setDisplayName("§eZu Seite " + (page - 1));
+                    skull.setOwner("MHF_ArrowLeft");
+                    item.setItemMeta(skull);
+                } else if(i == invsize - 4) {
+                    item = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+                    SkullMeta skull = (SkullMeta) item.getItemMeta();
+                    skull.setDisplayName("§eZu Seite " + (page + 1));
+                    skull.setOwner("MHF_ArrowRight");
+                    item.setItemMeta(skull);
+                }
+            } else {
+                item = filler;
+            }
+
+            inv.setItem(i, item);
+
+        }
+
+        p.openInventory(inv);
 
     }
 
@@ -1108,6 +1232,45 @@ public class INV_BuildUtils {
     }
 
     public static void openPluginSettings(Player p) {
+
+    }
+
+    public static void openInventorySettings(Player p) {
+
+    }
+
+    public static void openPlotFinishing(Player p) {
+
+        Inventory inv = Bukkit.createInventory(null, InventoryType.HOPPER, "§cContrayBuild - PlotAbgabe");
+
+        ItemStack filler = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName("§0");
+        filler.setItemMeta(fillerMeta);
+
+        ItemStack icontinue = new ItemStack(Material.WOOL, 1, (byte) 5);
+        ItemMeta continueMeta = icontinue.getItemMeta();
+        continueMeta.setDisplayName("§aBestätigen");
+        icontinue.setItemMeta(continueMeta);
+
+        ItemStack cancel = new ItemStack(Material.WOOL, 1, (byte) 14);
+        ItemMeta cancelMeta = cancel.getItemMeta();
+        cancelMeta.setDisplayName("§cAbbrechen");
+        cancel.setItemMeta(cancelMeta);
+
+        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (byte) 3);
+        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+        skullMeta.setDisplayName("§eMöchstest du diesen Plot wirklich abgeben?");
+        skullMeta.setOwner("MHF_Question");
+        skull.setItemMeta(skullMeta);
+
+        inv.setItem(0, icontinue);
+        inv.setItem(1, filler);
+        inv.setItem(2, skull);
+        inv.setItem(3, filler);
+        inv.setItem(4, cancel);
+
+        p.openInventory(inv);
 
     }
 

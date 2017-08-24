@@ -3,8 +3,10 @@ version: 1.0
 author: Fabtopf
 main: de.Fabtopf.BuildUtils.Utilities.Main
 
+softdepend: [PlotSquared, Multiverse-Core]
+
 commands:
   buildutils:
-    permission: contray.buildutils.admin
+    permission: contray.buildutils.openinv
     description: Command to manage the BuildUtils-Settings
     usage: /<command>
