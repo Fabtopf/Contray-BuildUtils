@@ -40,4 +40,8 @@ public class Message {
     public static String plotmanager_alreadyDone = Settings.prefix + "&4Fehler: &cDu hast deinen Plot bereits abgegeben!";
     public static String plotmanager_alreadyRating = Settings.prefix + "&4Fehler: &cDu bewertest bereits einen Plot!";
 
+    public static String specialitem_noFreeSlot = Settings.prefix + "&4Fehler: &cEs ist kein leerer Slot im Inventar verfügbar!";
+    public static String specialitem_speedFast = Settings.prefix + "&aDeine Geschwindigkeit ist jetzt &bschnell&a!";
+    public static String specialitem_speedSlow = Settings.prefix + "&aDeine Geschwindigkeit ist jetzt &blangsam&a!";
+
 }

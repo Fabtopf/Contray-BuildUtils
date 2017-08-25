@@ -8,12 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.permissions.Permission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1004,6 +1007,10 @@ public class INV_BuildUtils {
 
         List<Welt> welten = new ArrayList<Welt>();
 
+        for(World w : Bukkit.getWorlds()) {
+            WeltenManager.registerWelt(w.getName());
+        }
+
         for( Welt w : WeltenManager.getWeltenList()) {
             if(w.getBuilders().contains(Bukkit.getOfflinePlayer(p.getUniqueId())) || w.getCustomers().contains(Bukkit.getOfflinePlayer(p.getUniqueId()))) {
                 if(!welten.contains(w) && Bukkit.getWorld(w.getName()) != null) {
@@ -1236,6 +1243,117 @@ public class INV_BuildUtils {
     }
 
     public static void openInventorySettings(Player p) {
+
+        Inventory inv = Bukkit.createInventory(null, 45, "§cContrayBuild - SpecialItems");
+
+        ItemStack filler = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName("§0");
+        filler.setItemMeta(fillerMeta);
+
+        ItemStack blocked = new ItemStack(Material.BARRIER);
+        ItemMeta blockedMeta = blocked.getItemMeta();
+        blockedMeta.setDisplayName("§cNicht verfügbar");
+        blockedMeta.setLore(Converter.stringToList("§cUm dieses Item nutzen zu", "§ckönnen fehlen dir Berechtigungen!"));
+        blocked.setItemMeta(blockedMeta);
+
+        ItemStack item = null;
+        ItemMeta meta;
+
+        Spieler s = SpielerManager.getSpieler(p);
+
+        for(int i = 0; i < 45; i++) {
+
+            switch(i) {
+
+                case 10:
+                    item = new ItemStack(Material.SUGAR);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§eSpeed");
+                    if(s.isInv_speed()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    item.setItemMeta(meta);
+                    break;
+                case 28:
+                    item = new ItemStack(Material.FEATHER);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§eFlugmodus");
+                    if(s.isInv_fly()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    item.setItemMeta(meta);
+                    break;
+                case 13:
+                    if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.visit", Converter.stringToArray("contray.buildutils.worldmanagement.*", "contray.buildutils.*", "contray.*"), true, true))) {
+                        item = new ItemStack(Material.ENDER_PEARL);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§aWelten-Besuch");
+                        if(s.isInv_teleport()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        item.setItemMeta(meta);
+                    } else {
+                        item = blocked;
+                    }
+                    break;
+                case 31:
+                    if(PermissionManager.check(p, new CustomPerm("contray.buildutils.changeinventory", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                        item = new ItemStack(Material.WORKBENCH);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§aInventar-Settings");
+                        if(s.isInv_invsettings()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        item.setItemMeta(meta);
+                    } else {
+                        item = blocked;
+                    }
+                    break;
+                case 16:
+                    if(PermissionManager.check(p, new CustomPerm("contray.buildutils.plotfinish", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                        item = new ItemStack(Material.EMERALD);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§ePlot abgeben");
+                        if(s.isInv_finish()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        item.setItemMeta(meta);
+                    } else {
+                        item = blocked;
+                    }
+                    break;
+                case 34:
+                    if(PermissionManager.check(p, new CustomPerm("contray.buildutils.plotrate", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                        item = new ItemStack(Material.PAPER);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§cPlot bewerten");
+                        if(s.isInv_rate()) meta.addEnchant(Enchantment.LUCK, 1, true);
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                        item.setItemMeta(meta);
+                    } else {
+                        item = blocked;
+                    }
+                    break;
+                case 36:
+                    item = new ItemStack(Material.EMERALD);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§aReload");
+                    item.setItemMeta(meta);
+                    break;
+                case 44:
+                    item = new ItemStack(Material.BARRIER);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§cZurück");
+                    item.setItemMeta(meta);
+                    break;
+
+                default:
+                    item = filler;
+                    break;
+
+            }
+
+            inv.setItem(i, item);
+
+        }
+
+        p.openInventory(inv);
 
     }
 

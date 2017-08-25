@@ -3,10 +3,7 @@ package de.Fabtopf.BuildUtils.Utilities;
 import de.Fabtopf.BuildUtils.API.*;
 import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Commands.SERVER_BuildUtils;
-import de.Fabtopf.BuildUtils.Listener.ITEMPROTECTION_Protection;
-import de.Fabtopf.BuildUtils.Listener.SERVER_InventoryInteract;
-import de.Fabtopf.BuildUtils.Listener.SERVER_PlayerListChange;
-import de.Fabtopf.BuildUtils.Listener.WORLDMANAGEMENT_Protection;
+import de.Fabtopf.BuildUtils.Listener.*;
 import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import de.Fabtopf.BuildUtils.Utilities.MySQL.Utils;
 import org.bukkit.Bukkit;
@@ -132,6 +129,7 @@ public class Register {
         Main.getInstance().getCommand("buildutils").setPermissionMessage(ChatColor.translateAlternateColorCodes('&', Message.plugin_noperm));
         new SERVER_PlayerListChange();
         new SERVER_InventoryInteract();
+        new SPECIALITEM_Manager();
 
         ModuleManager.registerModule("WorldManagement");
         new BukkitRunnable() {

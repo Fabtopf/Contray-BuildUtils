@@ -3,6 +3,8 @@ package de.Fabtopf.BuildUtils.Listener;
 import de.Fabtopf.BuildUtils.API.FinishedPlot;
 import de.Fabtopf.BuildUtils.API.Manager.PlotManager;
 import de.Fabtopf.BuildUtils.API.Manager.SpielerManager;
+import de.Fabtopf.BuildUtils.API.Manager.WeltenManager;
+import de.Fabtopf.BuildUtils.API.Spieler;
 import de.Fabtopf.BuildUtils.Utilities.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,6 +53,9 @@ public class SERVER_PlayerListChange implements Listener {
     @EventHandler
     public void playerQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
+
+        if(WeltenManager.getWelt(p.getWorld().getName()) == null) WeltenManager.registerWelt(p.getWorld().getName());
+        if(WeltenManager.getWelt(p.getWorld().getName()).isManaged()) p.getInventory().clear();
 
         SpielerManager.unregisterSpieler(p);
     }

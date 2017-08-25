@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Fabi on 15.08.2017.
@@ -39,6 +40,14 @@ public class WORLDMANAGEMENT_Protection implements Listener {
 
                 if (welt != null && welt.isManaged()) {
                     if ((welt.isOpen() && (s.getBuilderGrade() >= welt.getNeededGrade())) || welt.isLobby() || welt.getBuilders().contains(op) || welt.getCustomers().contains(op)) {
+                        if(e.getFrom().getWorld() != e.getTo().getWorld()) {
+                            for(int i = 0; i < 40; i++) {
+                                int item = p.getInventory().getItem(i).getTypeId();
+                                if(ItemManager.getItem(item) != null && !ItemManager.getItem(item).isInventory() && p.getInventory().getItem(i).getItemMeta().getDisplayName() == null) {
+                                    p.getInventory().setItem(i, null);
+                                }
+                            }
+                        }
                         return;
                     } else {
                         Messager.toPlayer(MessagerType.COLORED, Message.worldmanagement_notPermittetToEnter, p);
