@@ -15,6 +15,11 @@ public class Settings {
     public static boolean online_mode;
     public static boolean shutdown;
 
+    public static boolean serversettings_drop;
+    public static boolean serversettings_pickup;
+    public static int serversettings_gamemode;
+    public static boolean serversettings_seevisitable;
+
     public static String mysql_host;
     public static String mysql_database;
     public static String mysql_username;

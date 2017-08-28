@@ -22,6 +22,7 @@ public class Welt {
     private boolean managed;
 
     private int neededGrade;
+    private int gamemode;
 
     private List<OfflinePlayer> builders = new ArrayList<>();
     private List<OfflinePlayer> customers = new ArrayList<>();
@@ -35,6 +36,7 @@ public class Welt {
         this.neededGrade = Utils.getWorldNeededGrade(name);
         this.customers = Converter.idStringToOpList(Utils.getWorldCustomers(name));
         this.builders = Converter.idStringToOpList(Utils.getWorldBuilders(name));
+        this.gamemode = Utils.getWorldGamemode(name);
     }
 
     public World getWorld() {
@@ -103,5 +105,14 @@ public class Welt {
     public String getName() {
 
         return name;
+    }
+
+    public int getGamemode() {
+        return gamemode;
+    }
+
+    public void setGamemode(int gamemode) {
+        Utils.updateWorldGamemode(name, gamemode);
+        this.gamemode = gamemode;
     }
 }

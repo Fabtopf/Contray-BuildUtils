@@ -6,6 +6,7 @@ import de.Fabtopf.BuildUtils.API.Enum.MessagerType;
 import de.Fabtopf.BuildUtils.API.Enum.PlotState;
 import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Commands.Inventory.INV_BuildUtils;
+import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import de.Fabtopf.BuildUtils.Utilities.Main;
 import de.Fabtopf.BuildUtils.Utilities.MySQL.Utils;
 import org.bukkit.Bukkit;
@@ -1085,6 +1086,89 @@ public class SERVER_InventoryInteract implements Listener {
                             return;
                         }
                     }
+                }
+
+                /*
+                 *  ContrayBuild - ServerSettings
+                 */
+
+                if(invname.equals("§cContrayBuild - ServerSettings")) {
+
+                    if(itemname.equals("§aReload")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            INV_BuildUtils.openPluginSettings(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§cZurück")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.openinv", Converter.stringToArray("contray.*", "contray.buildutils.*"), true, true))) {
+                            INV_BuildUtils.openGUI(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§cItemdrops erlauben") || itemname.equals("§aItemdrops erlauben")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            if(Settings.serversettings_drop) {
+                                Settings.serversettings_drop = false;
+                                Utils.updateEinstellung("AllowDrop", "false");
+                            } else {
+                                Settings.serversettings_drop = true;
+                                Utils.updateEinstellung("AllowDrop", "true");
+                            }
+
+                            INV_BuildUtils.openPluginSettings(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§aItemaufsammeln erlauben") || itemname.equals("§cItemaufsammeln erlauben")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            if(Settings.serversettings_pickup) {
+                                Settings.serversettings_pickup = false;
+                                Utils.updateEinstellung("AllowPickup", "false");
+                            } else {
+                                Settings.serversettings_pickup = true;
+                                Utils.updateEinstellung("AllowPickup", "true");
+                            }
+
+                            INV_BuildUtils.openPluginSettings(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.equals("§aÖffentliche Welten sichtbar") || itemname.equals("§cÖffentliche Welten sichtbar")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            if(Settings.serversettings_seevisitable) {
+                                Settings.serversettings_seevisitable = false;
+                                Utils.updateEinstellung("SeeVisitable", "false");
+                            } else {
+                                Settings.serversettings_seevisitable = true;
+                                Utils.updateEinstellung("SeeVisitable", "true");
+                            }
+
+                            INV_BuildUtils.openPluginSettings(p);
+                            return;
+                        }
+                    }
+
+                    if(itemname.startsWith("§9Gamemode: ")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            int gm = -1;
+                            if(Settings.serversettings_gamemode == 0) gm = 1;
+                            if(Settings.serversettings_gamemode == 1) gm = 2;
+                            if(Settings.serversettings_gamemode == 2) gm = 3;
+                            if(Settings.serversettings_gamemode == 3) gm = 0;
+
+                            Settings.serversettings_gamemode = gm;
+                            Utils.updateEinstellung("DefaultGamemode", Integer.toString(gm));
+
+                            INV_BuildUtils.openPluginSettings(p);
+                            return;
+                        }
+                    }
+
                 }
 
             }

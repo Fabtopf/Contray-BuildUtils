@@ -15,6 +15,7 @@ import org.bukkit.World;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,10 +30,11 @@ public class Utils {
 
         if(!mysql.tableExists("ContrayBU_Players")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Players (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(16), UUID_Online VARCHAR(64) UNIQUE, UUID_Offline VARCHAR(64) UNIQUE)");
         if(!mysql.tableExists("ContrayBU_PlayerSettings")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_PlayerSettings (ID MEDIUMINT UNIQUE, BuilderGrade MEDIUMINT)");
-        if(!mysql.tableExists("ContrayBU_Worlds")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Worlds (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(100), UID VARCHAR(64) UNIQUE, Managed BOOLEAN, Lobby BOOLEAN, NeededGrade MEDIUMINT, Public BOOLEAN, Builders TEXT, Customers TEXT)");
+        if(!mysql.tableExists("ContrayBU_Worlds")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Worlds (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(100), UID VARCHAR(64) UNIQUE, Managed BOOLEAN, Lobby BOOLEAN, NeededGrade MEDIUMINT, Public BOOLEAN, Gamemode INT(1), Builders TEXT, Customers TEXT)");
         if(!mysql.tableExists("ContrayBU_Modules")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Modules (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(64) UNIQUE, Enabled BOOLEAN, Devmode BOOLEAN)");
         if(!mysql.tableExists("ContrayBU_Items")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Items (ID MEDIUMINT NOT NULL UNIQUE, Place BOOLEAN, Fill BOOLEAN, Empty BOOLEAN, Interact BOOLEAN, Inventory BOOLEAN)");
         if(!mysql.tableExists("ContrayBU_Plots")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Plots (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlayerID MEDIUMINT UNIQUE, State INT(1), Noticed BOOLEAN, World VARCHAR(64), X DOUBLE, Y DOUBLE, Z DOUBLE, Pitch DOUBLE, Yaw DOUBLE)");
+        if(!mysql.tableExists("ContrayBU_Settings")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Settings (Einstellung VARCHAR(64) UNIQUE, Wert TEXT)");
 
     }
 
@@ -196,7 +198,7 @@ public class Utils {
 
     public static void registerWorld(String name) {
         if(!worldExists(name)) {
-            Settings.mysql.update("INSERT INTO ContrayBU_Worlds (Name, UID, Lobby, Managed, NeededGrade, Public, Builders, Customers) VALUES ('" + name + "','" + Bukkit.getWorld(name).getUID().toString() + "','0','0','0','1','','')");
+            Settings.mysql.update("INSERT INTO ContrayBU_Worlds (Name, UID, Lobby, Managed, NeededGrade, Public, Gamemode, Builders, Customers) VALUES ('" + name + "','" + Bukkit.getWorld(name).getUID().toString() + "','0','0','0','1','2','','')");
         }
     }
 
@@ -305,6 +307,27 @@ public class Utils {
 
     }
 
+    public static int getWorldGamemode(String name) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Worlds");
+
+        try {
+            while(rs.next()) {
+                if(rs.getString("Name").equalsIgnoreCase(name)) {
+                    return rs.getInt("Gamemode");
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return -1;
+
+    }
+
     public static String getWorldBuilders(String name) {
 
         Connector mysql = Settings.mysql;
@@ -353,6 +376,7 @@ public class Utils {
     public static void updateWorldNeededGrade(String name, int grade) { Settings.mysql.update("UPDATE ContrayBU_Worlds SET NeededGrade='" + grade + "' WHERE Name='" + name + "'"); }
     public static void updateWorldBuilders(String name, String builders) { Settings.mysql.update("UPDATE ContrayBU_Worlds SET Builders='" + builders + "' WHERE Name='" + name +"'"); }
     public static void updateWorldCustomers(String name, String customers) { Settings.mysql.update("UPDATE ContrayBU_Worlds SET Customers='" + customers + "' WHERE Name='" + name + "'"); }
+    public static void updateWorldGamemode(String name, int gamemode) { Settings.mysql.update("UPDATE ContrayBU_Worlds SET Gamemode='" + gamemode + "' WHERE Name='" + name + "'"); }
 
     // Module-Management
 
@@ -773,5 +797,60 @@ public class Utils {
         Settings.mysql.update("UPDATE ContrayBU_Plots SET Yaw='" + yaw + "' WHERE ID='" + id + "'");
     }
 
+    /*
+     *  Server-Settings
+     */
+
+    public static void registerSettings(HashMap<String, String> einstellungen) {
+        for(String einstellung : einstellungen.keySet()) {
+            if(!settingExists(einstellung)) {
+                Settings.mysql.update("INSERT INTO ContrayBU_Settings (Einstellung, Wert) VALUES ('" + einstellung + "','" + einstellungen.get(einstellung) + "')");
+            }
+        }
+    }
+
+    public static boolean settingExists(String einstellung) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Settings");
+
+        try {
+            while(rs.next()) {
+                if(rs.getString("Einstellung").equalsIgnoreCase(einstellung)) {
+                    return true;
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return false;
+
+    }
+
+    public static String getEinstellung(String einstellung) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Settings");
+
+        try {
+            while(rs.next()) {
+                if(rs.getString("Einstellung").equalsIgnoreCase(einstellung)) {
+                    return rs.getString("Wert");
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return null;
+
+    }
+
+    public static void updateEinstellung(String einstellung, String wert) { Settings.mysql.update("UPDATE ContrayBU_Settings SET Wert='" + wert + "' WHERE Einstellung='" + einstellung + "'"); }
 
 }

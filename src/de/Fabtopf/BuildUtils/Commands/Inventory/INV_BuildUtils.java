@@ -3,6 +3,7 @@ package de.Fabtopf.BuildUtils.Commands.Inventory;
 import de.Fabtopf.BuildUtils.API.*;
 import de.Fabtopf.BuildUtils.API.Manager.*;
 import de.Fabtopf.BuildUtils.Listener.SERVER_InventoryInteract;
+import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import de.Fabtopf.BuildUtils.Utilities.MySQL.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -1012,9 +1013,11 @@ public class INV_BuildUtils {
         }
 
         for( Welt w : WeltenManager.getWeltenList()) {
-            if(w.getBuilders().contains(Bukkit.getOfflinePlayer(p.getUniqueId())) || w.getCustomers().contains(Bukkit.getOfflinePlayer(p.getUniqueId()))) {
-                if(!welten.contains(w) && Bukkit.getWorld(w.getName()) != null) {
-                    welten.add(w);
+            if(w.isManaged()) {
+                if ((Settings.serversettings_seevisitable && (w.isLobby() || (w.isOpen() && SpielerManager.getSpieler(p).getBuilderGrade() >= w.getNeededGrade()))) || w.getBuilders().contains(Bukkit.getOfflinePlayer(p.getUniqueId())) || w.getCustomers().contains(Bukkit.getOfflinePlayer(p.getUniqueId()))) {
+                    if (!welten.contains(w) && Bukkit.getWorld(w.getName()) != null) {
+                        welten.add(w);
+                    }
                 }
             }
         }
@@ -1239,6 +1242,88 @@ public class INV_BuildUtils {
     }
 
     public static void openPluginSettings(Player p) {
+
+        Inventory inv = Bukkit.createInventory(null, 27, "§cContrayBuild - ServerSettings");
+
+        ItemStack filler = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 15);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName("§0");
+        filler.setItemMeta(fillerMeta);
+
+        ItemStack item = null;
+        ItemMeta meta;
+
+        for(int i = 0; i < 27; i++) {
+
+            switch(i) {
+
+                case 10:
+                    item = new ItemStack(Material.WOOL, 1, (byte) (Settings.serversettings_drop ? 5 : 14));
+                    meta = item.getItemMeta();
+                    meta.setDisplayName((Settings.serversettings_drop ? "§a" : "§c") + "Itemdrops erlauben");
+                    item.setItemMeta(meta);
+                    break;
+                case 12:
+                    item = new ItemStack(Material.WOOL, 1, (byte) (Settings.serversettings_pickup ? 5 : 14));
+                    meta = item.getItemMeta();
+                    meta.setDisplayName((Settings.serversettings_drop ? "§a" : "§c") + "Itemaufsammeln erlauben");
+                    item.setItemMeta(meta);
+                    break;
+                case 14:
+                    int d = -1;
+                    String gm = "";
+                    if(Settings.serversettings_gamemode == 0) {
+                        d = 5;
+                        gm = "§aSurvival";
+                    }
+                    if(Settings.serversettings_gamemode == 1) {
+                        d = 14;
+                        gm = "§cCreative";
+                    }
+                    if(Settings.serversettings_gamemode == 2) {
+                        d = 4;
+                        gm = "§eAdventure";
+                    }
+                    if(Settings.serversettings_gamemode == 3) {
+                        d = 1;
+                        gm = "&6Spectator";
+                    }
+
+                    item = new ItemStack(Material.STAINED_GLASS, 1, (byte) d);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§9Gamemode: " + gm);
+                    item.setItemMeta(meta);
+                    break;
+                case 16:
+                    item = new ItemStack(Material.WOOL, 1, (byte) (Settings.serversettings_seevisitable ? 5 : 14));
+                    meta = item.getItemMeta();
+                    meta.setDisplayName((Settings.serversettings_seevisitable ? "§a" : "§c") + "Öffentliche Welten sichtbar");
+                    item.setItemMeta(meta);
+                    break;
+                case 18:
+                    item = new ItemStack(Material.EMERALD);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§aReload");
+                    item.setItemMeta(meta);
+                    break;
+                case 26:
+                    item = new ItemStack(Material.BARRIER);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§cZurück");
+                    item.setItemMeta(meta);
+                    break;
+
+                default:
+                    item = filler;
+                    break;
+
+            }
+
+            inv.setItem(i, item);
+
+        }
+
+        p.openInventory(inv);
 
     }
 

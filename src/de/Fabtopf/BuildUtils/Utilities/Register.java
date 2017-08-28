@@ -12,6 +12,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
+
 /**
  * Created by Fabi on 15.08.2017.
  */
@@ -119,6 +121,22 @@ public class Register {
 
         Utils.setupTables();
 
+        HashMap<String, String> liste = new HashMap<String, String>();
+        liste.put("AllowPickup", "true");
+        liste.put("AllowDrop", "true");
+        liste.put("DefaultGamemode", "2");
+        liste.put("SeeVisitable", "true");
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+            Settings.serversettings_drop = (Utils.getEinstellung("AllowDrop").equals("true") ? true : false);
+            Settings.serversettings_pickup = (Utils.getEinstellung("AllowPickup").equals("true") ? true : false);
+            Settings.serversettings_gamemode = Integer.valueOf(Utils.getEinstellung("DefaultGamemode"));
+            Settings.serversettings_seevisitable = (Utils.getEinstellung("SeeVisitable").equals("true") ? true : false);
+            }
+        }.runTaskLater(Main.getInstance(), 10);
+
     }
 
     private static void registerModules() {
@@ -148,6 +166,16 @@ public class Register {
                 Module itemprotection = ModuleManager.getModule("ItemProtection");
                 itemprotection.setDevmode(false);
                 itemprotection.registerListener("Protection", new ITEMPROTECTION_Protection());
+            }
+        }.runTaskLater(Main.getInstance(), 10);
+
+        ModuleManager.registerModule("ServerSettings");
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Module settings = ModuleManager.getModule("ServerSettings");
+                settings.setDevmode(false);
+                settings.registerListener("Protection", new SERVERSETTINGS_Protection());
             }
         }.runTaskLater(Main.getInstance(), 10);
 

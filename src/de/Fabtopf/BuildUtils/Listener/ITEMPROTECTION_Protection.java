@@ -43,9 +43,17 @@ public class ITEMPROTECTION_Protection implements Listener {
                 }
 
                 int id = p.getItemInHand().getTypeId();
+                int id2 = e.getClickedBlock().getTypeId();
 
                 if (ItemManager.getItem(id) != null) {
                     if (!ItemManager.getItem(id).isInteract()) {
+                        Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
+                        e.setCancelled(true);
+                    }
+                }
+
+                if(ItemManager.getItem(id2) != null) {
+                    if (!ItemManager.getItem(id2).isInteract()) {
                         Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
                         e.setCancelled(true);
                     }

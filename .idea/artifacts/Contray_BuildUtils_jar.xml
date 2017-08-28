@@ -1,9 +1,10 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="Contray-BuildUtils:jar">
-    <output-path>$USER_HOME$/Desktop/Testserver/plugins</output-path>
+    <output-path>$USER_HOME$/Desktop/MC-Server/TestServer/plugins</output-path>
     <root id="archive" name="Contray-BuildUtils.jar">
       <element id="module-output" name="Contray-BuildUtils" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../APIs/Spigot 1.8.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../PlotSquared-Bukkit-17.08.18-17154ef-1907.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../craftbukkit.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

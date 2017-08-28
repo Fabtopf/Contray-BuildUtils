@@ -8,6 +8,7 @@ import de.Fabtopf.BuildUtils.Utilities.Cache.Settings;
 import de.Fabtopf.BuildUtils.Utilities.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +31,14 @@ public class WORLDMANAGEMENT_Protection implements Listener {
     public void onTeleport(PlayerTeleportEvent e) {
         if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
             Player p = e.getPlayer();
+
+            if(e.getFrom().getWorld() != e.getTo().getWorld()) {
+                if(WeltenManager.getWelt(e.getTo().getWorld().getName()) != null && WeltenManager.getWelt(e.getTo().getWorld().getName()).isManaged()) {
+                    p.setGameMode(GameMode.getByValue(WeltenManager.getWelt(e.getTo().getWorld().getName()).getGamemode()));
+                } else {
+                    p.setGameMode(GameMode.getByValue(Settings.serversettings_gamemode));
+                }
+            }
 
             if(PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.exempt", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.worldmanagement.*"), false, true))) {
                 return;
