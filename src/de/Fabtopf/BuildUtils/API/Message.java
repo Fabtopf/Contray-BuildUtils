@@ -33,6 +33,8 @@ public class Message {
     public static String command_playerOnly = Settings.prefix + "&4Fehler: &cDieser Befehl kann nicht in der Konsole ausgeführt werden!";
 
     public static String itemprotection_notAllowed = Settings.prefix + "&4Fehler: &cDu darfst dieses Item nicht verwenden!";
+    public static String itemprotection_notAllowedToInteractWith = Settings.prefix + "&4Fehler: &cDu darfst mit diesem Block nicht interagieren!";
+    public static String itemprotection_notAllowedToPlace = Settings.prefix + "&4Fehler: &cDu darfst diesen Block nicht platzieren!";
 
     public static String plotmanager_notOnPlot = Settings.prefix + "&4Fehler: &cDu befindest dich nicht auf einem Plot!";
     public static String plotmanager_notOwnPlot = Settings.prefix + "&4Fehler: &cDu kannst nur eigene Plot abgeben!";

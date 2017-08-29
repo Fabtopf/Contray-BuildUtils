@@ -127,13 +127,15 @@ public class Register {
         liste.put("DefaultGamemode", "2");
         liste.put("SeeVisitable", "true");
 
+        Utils.registerSettings(liste);
+
         new BukkitRunnable() {
             @Override
             public void run() {
-            Settings.serversettings_drop = (Utils.getEinstellung("AllowDrop").equals("true") ? true : false);
-            Settings.serversettings_pickup = (Utils.getEinstellung("AllowPickup").equals("true") ? true : false);
-            Settings.serversettings_gamemode = Integer.valueOf(Utils.getEinstellung("DefaultGamemode"));
-            Settings.serversettings_seevisitable = (Utils.getEinstellung("SeeVisitable").equals("true") ? true : false);
+                Settings.serversettings_drop = (Utils.getEinstellung("AllowDrop").equals("true") ? true : false);
+                Settings.serversettings_pickup = (Utils.getEinstellung("AllowPickup").equals("true") ? true : false);
+                Settings.serversettings_gamemode = Integer.valueOf(Utils.getEinstellung("DefaultGamemode"));
+                Settings.serversettings_seevisitable = (Utils.getEinstellung("SeeVisitable").equals("true") ? true : false);
             }
         }.runTaskLater(Main.getInstance(), 10);
 

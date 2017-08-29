@@ -28,7 +28,7 @@ public class SERVERSETTINGS_Protection implements Listener {
             Welt welt = null;
             if(WeltenManager.getWelt(p.getWorld().getName()) != null) welt = WeltenManager.getWelt(p.getWorld().getName());
 
-            if(welt != null && welt.isManaged() && Settings.serversettings_drop) {
+            if(welt != null && welt.isManaged() && !Settings.serversettings_drop) {
                 if (PermissionManager.check(p, new CustomPerm("contray.buildutils.serversettings.exempt", Converter.stringToArray("contray.buildutils.serversettings.*", "contray.buildutils.*", "contray.*"), true, true))) {
                     return;
                 } else {
@@ -46,7 +46,7 @@ public class SERVERSETTINGS_Protection implements Listener {
             Welt welt = null;
             if(WeltenManager.getWelt(p.getWorld().getName()) != null) welt = WeltenManager.getWelt(p.getWorld().getName());
 
-            if(welt != null && welt.isManaged() && Settings.serversettings_pickup) {
+            if(welt != null && welt.isManaged() && !Settings.serversettings_pickup) {
                 if (PermissionManager.check(p, new CustomPerm("contray.buildutils.serversettings.exempt", Converter.stringToArray("contray.buildutils.serversettings.*", "contray.buildutils.*", "contray.*"), true, true))) {
                     return;
                 } else {

@@ -590,16 +590,33 @@ public class INV_BuildUtils {
                         item.setItemMeta(meta);
                     }
                     break;
-                case 32:
-                    if(i.isInteract()) {
+                case 31:
+                    if(i.isInteractAt()) {
                         item = new ItemStack(Material.WOOL, 1, (byte) 5);
                         meta = item.getItemMeta();
-                        meta.setDisplayName("§aInteraktion");
+                        meta.setDisplayName("§aInteraktion an Block");
+                        meta.setLore(Converter.stringToList("§cVerbietet interagieren, wenn ein", "§cBlock dieses Typs angeklickt wird."));
                         item.setItemMeta(meta);
                     } else {
                         item = new ItemStack(Material.WOOL, 1, (byte) 14);
                         meta = item.getItemMeta();
-                        meta.setDisplayName("§cInteraktion");
+                        meta.setDisplayName("§cInteraktion an Block");
+                        meta.setLore(Converter.stringToList("§cVerbietet interagieren, wenn ein", "§cBlock dieses Typs angeklickt wird."));
+                        item.setItemMeta(meta);
+                    }
+                    break;
+                case 32:
+                    if(i.isInteract()) {
+                        item = new ItemStack(Material.WOOL, 1, (byte) 5);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§aInteraktion mit Item");
+                        meta.setLore(Converter.stringToList("§cVerbietet interagieren, wenn ein", "§cItem dieses Typs gehalten wird."));
+                        item.setItemMeta(meta);
+                    } else {
+                        item = new ItemStack(Material.WOOL, 1, (byte) 14);
+                        meta = item.getItemMeta();
+                        meta.setDisplayName("§cInteraktion mit Item");
+                        meta.setLore(Converter.stringToList("§cVerbietet interagieren, wenn ein", "§cItem dieses Typs gehalten wird."));
                         item.setItemMeta(meta);
                     }
                     break;
@@ -675,6 +692,32 @@ public class INV_BuildUtils {
                     item = new ItemStack(Material.GRASS);
                     meta = item.getItemMeta();
                     meta.setDisplayName("§e" + welt.getName());
+                    item.setItemMeta(meta);
+                    break;
+
+                case 15:
+                    int d = -1;
+                    String gm = "";
+                    if(welt.getGamemode() == 0) {
+                        d = 5;
+                        gm = "§aSurvival";
+                    }
+                    if(welt.getGamemode() == 1) {
+                        d = 14;
+                        gm = "§cCreative";
+                    }
+                    if(welt.getGamemode() == 2) {
+                        d = 4;
+                        gm = "§eAdventure";
+                    }
+                    if(welt.getGamemode() == 3) {
+                        d = 1;
+                        gm = "§6Spectator";
+                    }
+
+                    item = new ItemStack(Material.STAINED_GLASS, 1, (byte) d);
+                    meta = item.getItemMeta();
+                    meta.setDisplayName("§9Gamemode: " + gm);
                     item.setItemMeta(meta);
                     break;
 
@@ -1286,7 +1329,7 @@ public class INV_BuildUtils {
                     }
                     if(Settings.serversettings_gamemode == 3) {
                         d = 1;
-                        gm = "&6Spectator";
+                        gm = "§6Spectator";
                     }
 
                     item = new ItemStack(Material.STAINED_GLASS, 1, (byte) d);

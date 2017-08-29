@@ -32,7 +32,7 @@ public class Utils {
         if(!mysql.tableExists("ContrayBU_PlayerSettings")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_PlayerSettings (ID MEDIUMINT UNIQUE, BuilderGrade MEDIUMINT)");
         if(!mysql.tableExists("ContrayBU_Worlds")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Worlds (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(100), UID VARCHAR(64) UNIQUE, Managed BOOLEAN, Lobby BOOLEAN, NeededGrade MEDIUMINT, Public BOOLEAN, Gamemode INT(1), Builders TEXT, Customers TEXT)");
         if(!mysql.tableExists("ContrayBU_Modules")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Modules (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(64) UNIQUE, Enabled BOOLEAN, Devmode BOOLEAN)");
-        if(!mysql.tableExists("ContrayBU_Items")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Items (ID MEDIUMINT NOT NULL UNIQUE, Place BOOLEAN, Fill BOOLEAN, Empty BOOLEAN, Interact BOOLEAN, Inventory BOOLEAN)");
+        if(!mysql.tableExists("ContrayBU_Items")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Items (ID MEDIUMINT NOT NULL UNIQUE, Place BOOLEAN, Fill BOOLEAN, Empty BOOLEAN, Interact BOOLEAN, Inventory BOOLEAN, InteractAt BOOLEAN)");
         if(!mysql.tableExists("ContrayBU_Plots")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Plots (ID MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY, PlayerID MEDIUMINT UNIQUE, State INT(1), Noticed BOOLEAN, World VARCHAR(64), X DOUBLE, Y DOUBLE, Z DOUBLE, Pitch DOUBLE, Yaw DOUBLE)");
         if(!mysql.tableExists("ContrayBU_Settings")) mysql.update("CREATE TABLE IF NOT EXISTS ContrayBU_Settings (Einstellung VARCHAR(64) UNIQUE, Wert TEXT)");
 
@@ -456,7 +456,7 @@ public class Utils {
 
     public static void registerItem(int id) {
         if(!itemExists(id)) {
-            Settings.mysql.update("INSERT INTO ContrayBU_Items (ID, Place, Fill, Empty, Interact, Inventory) VALUES ('" + id + "',1,1,1,1,1)");
+            Settings.mysql.update("INSERT INTO ContrayBU_Items (ID, Place, Fill, Empty, Interact, Inventory, InteractAt) VALUES ('" + id + "',1,1,1,1,1,1)");
         }
     }
 
@@ -497,6 +497,27 @@ public class Utils {
             while(rs.next()) {
                 if(rs.getInt("ID") == id) {
                     return rs.getBoolean("Place");
+                }
+            }
+        } catch(SQLException e) {
+            if(Settings.devmode) e.printStackTrace();
+            Messager.toConsole(MessagerType.COLORED, Message.mysql_resultfail);
+        }
+
+        return false;
+
+    }
+
+    public static boolean getItemInteractAt(int id) {
+
+        Connector mysql = Settings.mysql;
+
+        ResultSet rs = mysql.getResult("SELECT * FROM ContrayBU_Items");
+
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ID") == id) {
+                    return rs.getBoolean("InteractAt");
                 }
             }
         } catch(SQLException e) {
@@ -597,6 +618,7 @@ public class Utils {
     public static void updateItemEmpty(int id, boolean empty) { Settings.mysql.update("UPDATE ContrayBU_Items SET Empty='" + (empty ? 1 : 0) + "' WHERE ID='" + id + "'"); }
     public static void updateItemInteract(int id, boolean interact) { Settings.mysql.update("UPDATE ContrayBU_Items SET Interact='" + (interact ? 1 : 0) + "' WHERE ID='" + id + "'"); }
     public static void updateItemInventory(int id, boolean inventory) { Settings.mysql.update("UPDATE ContrayBU_Items SET Inventory='" + (inventory ? 1 : 0) + "' WHERE ID='" + id + "'"); }
+    public static void updateItemInteractAt(int id, boolean interactAt) {Settings.mysql.update("UPDATE ContrayBU_Items SET InteractAt='" + (interactAt ? 1 : 0) + "' WHERE ID='" + id + "'");}
 
     public static List<Integer> getItemIds() {
         List<Integer> list = new ArrayList<Integer>();

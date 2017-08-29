@@ -302,7 +302,7 @@ public class SERVER_InventoryInteract implements Listener {
                         }
                     }
 
-                    if(itemname.equals("§aInteraktion") || itemname.equals("§cInteraktion")) {
+                    if(itemname.equals("§aInteraktion mit Item") || itemname.equals("§cInteraktion mit Item")) {
                         if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.items", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
                             if(item.isInteract()) {
                                 item.setInteract(false);
@@ -310,6 +310,20 @@ public class SERVER_InventoryInteract implements Listener {
                                 return;
                             } else {
                                 item.setInteract(true);
+                                INV_BuildUtils.openItemManagementSettings(p, item);
+                                return;
+                            }
+                        }
+                    }
+
+                    if(itemname.equals("§aInteraktion an Block") || itemname.equals("§cInteraktion an Block")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.items", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            if(item.isInteractAt()) {
+                                item.setInteractAt(false);
+                                INV_BuildUtils.openItemManagementSettings(p, item);
+                                return;
+                            } else {
+                                item.setInteractAt(true);
                                 INV_BuildUtils.openItemManagementSettings(p, item);
                                 return;
                             }
@@ -468,6 +482,22 @@ public class SERVER_InventoryInteract implements Listener {
                     if(itemname.equals("§3Besucher")) {
                         if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.worlds", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
                             INV_BuildUtils.openWorldManagementCustomers(p, welt, 1);
+                            return;
+                        }
+                    }
+
+                    if(itemname.startsWith("§9Gamemode: ")) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.worlds", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {
+                            int gm = -1;
+                            if(welt.getGamemode() == 0) gm = 1;
+                            if(welt.getGamemode() == 1) gm = 2;
+                            if(welt.getGamemode() == 2) gm = 3;
+                            if(welt.getGamemode() == 3) gm = 0;
+
+                            welt.setGamemode(gm);
+                            Utils.updateWorldGamemode(welt.getName(), gm);
+
+                            INV_BuildUtils.openWorldManagementSettings(p, welt);
                             return;
                         }
                     }
@@ -674,7 +704,7 @@ public class SERVER_InventoryInteract implements Listener {
                     }
 
                     if(WeltenManager.getWelt(ChatColor.stripColor(itemname)) != null) {
-                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.weltenmanagement.visit", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.weltenmanagement.*"), true, true))) {
+                        if (PermissionManager.check(p, new CustomPerm("contray.buildutils.worldmanagement.visit", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.weltenmanagement.*"), true, true))) {
                             Welt welt = WeltenManager.getWelt(ChatColor.stripColor(itemname));
 
                             if(welt != null && Bukkit.getWorld(welt.getName()) != null) {
@@ -1093,6 +1123,7 @@ public class SERVER_InventoryInteract implements Listener {
                  */
 
                 if(invname.equals("§cContrayBuild - ServerSettings")) {
+                    e.setCancelled(true);
 
                     if(itemname.equals("§aReload")) {
                         if (PermissionManager.check(p, new CustomPerm("contray.buildutils.admin.settings", Converter.stringToArray("contray.*", "contray.buildutils.*", "contray.buildutils.admin.*"), true, true))) {

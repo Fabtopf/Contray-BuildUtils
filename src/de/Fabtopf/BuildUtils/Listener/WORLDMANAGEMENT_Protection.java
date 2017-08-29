@@ -10,12 +10,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -258,6 +263,46 @@ public class WORLDMANAGEMENT_Protection implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerDamagePlayer(EntityDamageByEntityEvent e) {
+
+        if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
+            if(e.getDamager().getType() == EntityType.PLAYER && e.getEntity().getType() == EntityType.PLAYER) {
+                Player p = (Player) e.getDamager();
+                Welt welt = WeltenManager.getWelt(p.getLocation().getWorld().getName());
+
+                if(welt != null && welt.isManaged() && welt.isLobby()) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerTakeDamage(EntityDamageEvent e) {
+
+        if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
+            if (e.getEntity().getType() == EntityType.PLAYER) {
+                if (WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()) != null && WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()).isManaged() && WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()).isLobby()) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerGetHunger(FoodLevelChangeEvent e) {
+
+        if(module.isEnabled() && (!module.isDevmode() || (module.isDevmode() && Settings.devmode))) {
+            if (WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()) != null && WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()).isManaged() && WeltenManager.getWelt(e.getEntity().getLocation().getWorld().getName()).isLobby()) {
+                e.setCancelled(true);
+            }
+        }
+
     }
 
     /*

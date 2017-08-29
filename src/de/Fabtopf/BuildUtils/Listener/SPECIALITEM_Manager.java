@@ -239,6 +239,8 @@ public class SPECIALITEM_Manager implements Listener {
             if(p.getItemInHand() != null && p.getItemInHand().getItemMeta().getDisplayName() != null) {
                 String itemname = p.getItemInHand().getItemMeta().getDisplayName();
                 if (itemname.equals("§eSpeed") || itemname.equals("§eFlugmodus") || itemname.equals("§aWelten-Besuch") || itemname.equals("§ePlot abgeben") || itemname.equals("§aInventar-Settings") || itemname.equals("§cPlot bewerten")) {
+                    e.setCancelled(true);
+
                     if(itemname.equals("§eSpeed")) {
                         if(!s.isSpeed()) {
                             p.setFlySpeed(((float) 0.5));

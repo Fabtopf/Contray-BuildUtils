@@ -14,6 +14,7 @@ public class Item {
     boolean emptyBucket;
     boolean fillBucket;
     boolean inventory;
+    boolean interactAt;
 
     public Item(int id) {
         this.id = id;
@@ -22,6 +23,7 @@ public class Item {
         this.emptyBucket = Utils.getItemEmpty(id);
         this.fillBucket = Utils.getItemFill(id);
         this.inventory = Utils.getItemInventory(id);
+        this.interactAt = Utils.getItemInteractAt(id);
     }
 
     public int getId() {
@@ -47,6 +49,8 @@ public class Item {
     public boolean isInventory() {
         return inventory;
     }
+
+    public boolean isInteractAt() {return interactAt;}
 
     public void setInteract(boolean interact) {
         if(interact != this.interact) {
@@ -80,6 +84,13 @@ public class Item {
         if(inventory != this.inventory) {
             this.inventory = inventory;
             Utils.updateItemInventory(id, inventory);
+        }
+    }
+
+    public void setInteractAt(boolean interactAt) {
+        if(interactAt != this.interactAt) {
+            this.interactAt = interactAt;
+            Utils.updateItemInteractAt(id, interactAt);
         }
     }
 }

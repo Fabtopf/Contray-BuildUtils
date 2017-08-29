@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -36,26 +37,33 @@ public class ITEMPROTECTION_Protection implements Listener {
                 return;
             } else {
 
-                if(e.getItem().getItemMeta().getDisplayName() != null) {
-                    String itemname = e.getItem().getItemMeta().getDisplayName();
-                    if (itemname.equals("§eSpeed") || itemname.equals("§eFlugmodus") || itemname.equals("§aWelten-Besuch") || itemname.equals("§ePlot abgeben") || itemname.equals("§aInventar-Settings") || itemname.equals("§cPlot bewerten"))
-                        return;
-                }
-
-                int id = p.getItemInHand().getTypeId();
-                int id2 = e.getClickedBlock().getTypeId();
-
-                if (ItemManager.getItem(id) != null) {
-                    if (!ItemManager.getItem(id).isInteract()) {
-                        Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
-                        e.setCancelled(true);
+                if (e.getItem() != null) {
+                    if (e.getItem().getItemMeta().getDisplayName() != null) {
+                        String itemname = e.getItem().getItemMeta().getDisplayName();
+                        if (itemname.equals("§eSpeed") || itemname.equals("§eFlugmodus") || itemname.equals("§aWelten-Besuch") || itemname.equals("§ePlot abgeben") || itemname.equals("§aInventar-Settings") || itemname.equals("§cPlot bewerten"))
+                            return;
                     }
                 }
 
+                int id2 = e.getClickedBlock().getTypeId();
+
                 if(ItemManager.getItem(id2) != null) {
-                    if (!ItemManager.getItem(id2).isInteract()) {
-                        Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
-                        e.setCancelled(true);
+                    if (!ItemManager.getItem(id2).isInteractAt()) {
+                        if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_AIR) {
+                            Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowedToInteractWith, p);
+                            e.setCancelled(true);
+                        }
+                    }
+                }
+
+                int id = p.getItemInHand().getTypeId();
+
+                if (ItemManager.getItem(id) != null) {
+                    if (!ItemManager.getItem(id).isInteract()) {
+                        if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                            Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
+                            e.setCancelled(true);
+                        }
                     }
                 }
             }
@@ -159,7 +167,7 @@ public class ITEMPROTECTION_Protection implements Listener {
 
                 if (ItemManager.getItem(id) != null) {
                     if (!ItemManager.getItem(id).isPlace()) {
-                        Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowed, p);
+                        Messager.toPlayer(MessagerType.COLORED, Message.itemprotection_notAllowedToPlace, p);
                         e.setCancelled(true);
                     }
                 }
